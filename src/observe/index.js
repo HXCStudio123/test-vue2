@@ -1,9 +1,9 @@
 class Observer {
   constructor(data) {
-    this.walk(data);
+    this.walk(data)
   }
   walk(data) {
-    Object.keys(data).forEach((key) => defineReactive(data, key, data[key]));
+    Object.keys(data).forEach((key) => defineReactive(data, key, data[key]))
   }
 }
 /**
@@ -16,29 +16,29 @@ function defineReactive(target, key, value) {
   // 对象 key {  }
   // 拦截取值的过程
   // 拦截赋值的过程
-  observe(value);
+  observe(value)
   // 只能拦截当前target 存在的 key
   Object.defineProperty(target, key, {
     configurable: true,
     enumerable: true,
     get() {
-      console.log("get", value);
-      return value;
+      console.log('get', value)
+      return value
     },
     set(newValue) {
       if (newValue === value) {
-        return;
+        return
       }
-      console.log("set", newValue);
-      observe(newValue);
-      value = newValue;
+      console.log('set', newValue)
+      observe(newValue)
+      value = newValue
     },
-  });
+  })
 }
 
 export function observe(data) {
-  if (typeof data !== "object" || data === null) {
-    return;
+  if (typeof data !== 'object' || data === null) {
+    return
   }
-  return new Observer(data);
+  return new Observer(data)
 }
