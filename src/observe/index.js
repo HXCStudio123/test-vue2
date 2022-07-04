@@ -1,9 +1,16 @@
 class Observer {
   constructor(data) {
-    this.walk(data)
+    if (Array.isArray(data)) {
+      this.observeArray(data)
+    } else {
+      this.walk(data)
+    }
   }
   walk(data) {
     Object.keys(data).forEach((key) => defineReactive(data, key, data[key]))
+  }
+  observeArray(data) {
+    data.forEach((item) => observe(item))
   }
 }
 /**
