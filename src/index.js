@@ -1,7 +1,7 @@
-import { initMixin } from "./init"
+import initMixin from "./init";
 
 function Vue(options) {
-  this._init(options)
+  this._init(options);
 }
 
 initMixin(Vue)
