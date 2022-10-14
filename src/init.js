@@ -1,5 +1,8 @@
 import { compileToFunctions } from "./compiler/index";
+import { initEvents } from "./events";
+import { callHook, mountComponent } from "./lifecycle";
 import { initState } from "./state";
+import { mergeOptions } from "./utils/index.js";
 
 function initMixin(Vue) {
   Vue.prototype._init = function (options) {
@@ -8,9 +11,14 @@ function initMixin(Vue) {
     // 在Vue中一般使用 $xxx 来表示一些Vue的私有属性
     // 在Vue源码中，此处其实是做了一个参数合并的动作
     // 将用户的操作挂载在实例上
-    this.$options = options;
+    // vm.$options = options;
+    const globalOptions = Vue.options;
+    vm.$options = mergeOptions(globalOptions || {}, options);
     vm._self = vm;
+    initEvents(vm);
+    callHook(vm, "beforeCreate");
     initState(vm);
+    callHook(vm, "created");
     // 初始化状态，比如 data/computed/props等等
     if (vm.$options.el) {
       vm.$mount(vm.$options.el);
@@ -32,12 +40,14 @@ function initMixin(Vue) {
       if (template) {
         // 如果有模板需要对模板进行编译，即 html -> ast语法树
         // 生成render函数，并挂载到opts上
-        const render = compileToFunctions(template)
+        const render = compileToFunctions(template);
         // jsx -> 渲染函数 h('div', { ... 描述 })
         // 这一步骤只有在打包时才会有，runtime Only 如果是runtime+compiler则是把编译过程放在运行时做
-        opts.render = render
+        opts.render = render;
       }
     }
+    // 开始渲染页面
+    mountComponent(vm, el);
   };
 }
 export default initMixin;
